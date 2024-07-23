@@ -1,0 +1,40 @@
+name: up down test
+
+on:
+  push:
+
+jobs:
+  upload:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Generate a file with simple text
+        run: |
+          $filePath = "simple_text.txt"
+          "This is some simple text." | Out-File -FilePath $filePath
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple_text_artifact
+          path: simple_text.txt
+
+  download:
+    needs: [upload]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: simple_text_artifact
+          path: downloaded_artifact
+
+      - name: List downloaded files
+        run: ls downloaded_artifact
